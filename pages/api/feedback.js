@@ -12,6 +12,10 @@ const handler = (req, res) => {
         data.push({id: myuuid, timestamp: Date.now(), name: name})
         fs.writeFileSync(filePath, JSON.stringify(data));
         res.status(201).json({message: 'sucess', name: data})
+    } else if (req.method === 'DELETE') {
+        const filteredData = data.filter((item)=> item.id !== req.body.id)
+        fs.writeFileSync(filePath, JSON.stringify(filteredData));
+        res.status(200).json({message: 'Done'})
     } else {
         res.status(200).json({feedbacks: data})
     }

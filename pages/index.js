@@ -4,13 +4,14 @@ export default function Home() {
   const [feedbacks, setFeedBacks] = useState([]);
   const [name, setName] = useState("");
 
+  const fetchData = async () => {
+    const res = await fetch("/api/feedback");
+    const resData = await res.json();
+    console.log(resData);
+    setFeedBacks(resData.feedbacks.reverse());
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/feedback");
-      const resData = await res.json();
-      console.log(resData);
-      setFeedBacks(resData.feedbacks);
-    };
     fetchData();
   }, [name]);
 
@@ -33,7 +34,17 @@ export default function Home() {
   };
 
   const deleteHandler = async (id) => {
-    console.log(id)
+    console.log("will delete ", id)
+    const response = await fetch("/api/feedback", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: id }),
+    });
+    const responseData = await response.json();
+    console.log(responseData);
+    fetchData();
   }
 
   return (
@@ -84,7 +95,7 @@ export default function Home() {
               {feedbacks.map((item, index) => 
                 <tr
                   key={item.id}
-                  className={`${index % 2 === 0 ? "bg-white" : "bg-slate-300"}`}
+                  className={`${index % 2 === 0 ? "bg-white hover:bg-amber-500 cursor-pointer flex-row-reverse" : "bg-slate-300 hover:bg-amber-500 cursor-pointer flex-row-reverse"}`}
                   onClick={deleteHandler.bind(null, item.id)}
                   // className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
@@ -94,7 +105,7 @@ export default function Home() {
                   >
                     {item.name.toUpperCase()}
                   </th>
-                  <td className="px-6 py-4">{new Date(item.timestamp).getHours() + ':' + new Date(item.timestamp).getMinutes()}</td>
+                  <td className="px-6 py-4">{new Date(item.timestamp).getHours() + ':' + new Date(item.timestamp).getMinutes() + ':' + new Date(item.timestamp).getSeconds()}</td>
                   <td className="px-6 py-4">{item.id.slice(0, 7)}</td>
                 </tr>
               )}
